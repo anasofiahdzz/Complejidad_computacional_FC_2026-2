@@ -12,11 +12,15 @@ algorithm,
 \algrenewcommand\algorithmicindent{2.0em} %
 \usepackage[spanish]{babel}
 \usepackage{marginnote}
-\geometry{tmargin=.75in, bmargin=.75in, lmargin=.75in, rmargin = .75in}  
+\geometry{tmargin=.25in, bmargin=.65in, lmargin=.75in, rmargin = .75in}  
 %Configurar manualmente la primera sección
  \setcounter{section}{0}
 \usepackage{dirtytalk}
 \usepackage{tikz}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{nicematrix}
+\usetikzlibrary{chains,fit,shapes}
 \renewcommand\thempfootnote{\arabic{mpfootnote}} 
 \renewcommand{\contentsname}{Contenido}
 \newcommand{\A}{\mathcal{A}}
@@ -45,6 +49,7 @@ algorithm,
 \newtheorem{claim}{Afirmaci\'on}[section]
 
 \theoremstyle{definition}
+\newtheorem*{definition*}{Definición}
 \newtheorem{example}{Ejemplo}[section]
 \newtheorem{example*}{Ejemplo}
 \newtheorem{definition}{Definici\'on}[section]
@@ -62,48 +67,75 @@ algorithm,
 \newtheorem{lem}{Lemma}
 \newtheorem{cor}{Corollary}
 
-\title{Lista de ejercicios}
+\title{Tarea-examen 2. Complejidad Computacional.}
 \author{}
 \date{}
 
 \begin{document}
 
 \maketitle
-% \tableofcontents
-\vspace{.25in}
-
 \begin{enumerate}
-    \item Muestra cómo puedes traducir la información de los siguientes objetos como cadenas binarias, de modo que ser un \textit{input} en una máquina de Turing:
-        \begin{enumerate}
-            \item Una gráfica binaria (no ponderada) y no dirigida.
-            \item Una gráfica ponderada y no dirigida.
-            \item Una gráfica binaria y dirigida.
-            \item Una gráfica ponderada y dirigida.
-        \end{enumerate}
 
-    \item Muestra que las siguientes operaciones son funciones computables, dando la descripción detallada de una máquina de Turing que las compute.
-        \begin{enumerate}
-            \item La operación de suma entre números naturales.
-            \item La operación de multiplicación entre números naturales.
-            \item La operación de \textit{duplicar una cadena}, i.e. si se le aplica la operación a la cadena $w$, el resultado es la cadena $ww$.
-            \item La operación de comparar dos cadenas. Esta operación recibe dos cadenas como entrada, y arroja un 1 como salida si las cadenas son iguales, y un 0 si son diferentes. 
-            \item La operación que verifica si una cadena es un palíndromo.
-        \end{enumerate}
+    \item (\textit{2 puntos}) Sea $G=(V,E)$ una gráfica. Una $k$-\textit{coloración} de $G$ es una función $c:V\longrightarrow\{1,\ldots,k\}$ tal que:
+    $$\forall u,v\in V\,\big[uv\in E\to c(u)\neq c(v)\big]$$
+    Considera el lenguaje $\texttt{3COL}=\{Bin(G): G \text{ tiene una 3-coloración}\}$.
+    \begin{enumerate}
+        \item Dado que $G\in\texttt{3COL}$, ¿qué estructura propones como \textit{testigo} de este hecho?
+        \item Muestra que el tamaño del testigo es polinomial en función de $|Bin(G)|$.
+        \item Describe un algoritmo verificador $V$ que, dados $Bin(G)$ y el testigo, decida en tiempo polinomial si el testigo es válido.
+        \item Concluye formalmente que $\texttt{3COL}\in\mathbf{NP}$.
+        \item ¿Es posible que $\texttt{3COL}\in\mathbf{P}$? ¿Qué consecuencia tendría eso para las clases de complejidad?
+    \end{enumerate}
 
-        \item Para este ejercicio, primero damos la siguiente definición:
-        \begin{definition}\label{oblivous tm}
-        Decimos que una máquina de Turing es \textit{olvidadiza} si las transiciones de sus estados no dependen del contenido de una entrada, solamente de la longitud de la misma. Es decir, una máquina $M$ es olvidadiza si y solo si, para cualesquiera cadenas de entrada $x, y\in \{0,1\}^*$, si $\lvert x\rvert = \lvert y \rvert,$ entonces $M(x)=M(y)$.
-        \end{definition}
-        Muestra que para toda función construible en tiempo $T:\mathbb{N}\longrightarrow \mathbb{N}$, si el lenguaje $L$ pertenece al conjunto $\mathbf{DTIME}(T(n))$, entonces existe una máquina de Turing olvidadiza que decide $L$ en tiempo $O(T^2)$.
-        \item Muestra que para cada función construible en tiempo $T:\mathbb{N}\longrightarrow \mathbb{N}$, si $L\in \mathbf{DITME}(T(n))$, entonces hay una máquina de Turing que decide $L$ en tiempo $O\big(T(n)\log T(n)\big)$.
-
-        \item Muestra que los siguientes lenguajes pertenecen a la clase $\mathbf{P}$:
-        \begin{enumerate}
-            \item El lenguaje de los números pares:
-            \[L:=\big\{x\in \{0,1\}^*:\exists n\in \mathbb{N}\,\big(n\textit{ es par }\wedge x=Bin(n)\big)\big\}.\]
-            \item El lenguaje de los números primos \[L:=\big\{x\in \{0,1\}^*:\exists n\in \mathbb{N}\,\big(n\textit{ es primo }\wedge x=Bin(n)\big)\big\}.\]
-            \item El lenguaje $\texttt{CONNECTED}\subseteq\{0,1\}^*$ definido por la siguiente regla:$x\in \texttt{CONNECTED}$ si y sólo si $x$ es la representación como cadena binaria de una gráfica no dirigida $G=(V,E)$ en la que para cualesquiera vértices $x,y\in V$, existe un camino que conecta a $x$ con $y$. 
+    \item (\textit{1.5 puntos}) Sea $G$ una gráfica dirigida y ponderada, y $cost(P)$ la suma de los costos de las aristas de un circuito $P$. Considera:
+    $$\texttt{TSP}=\{(G,B): \text{existe un circuito Hamiltoniano en $G$ con $cost(P)\leq B$}\}$$
+    \begin{enumerate}
+        \item ¿$\texttt{TSP}\in\mathbf{P}$? Justifica brevemente.
+        \item Considera la familia:
+        $$\texttt{TSP}^*=\{(G,P,B): \text{$P$ es un circuito Hamiltoniano en $G$ y $cost(P)\leq B$}\}$$
+        Muestra que $\texttt{TSP}^*\in\mathbf{P}$ siguiendo los pasos:
+        \begin{enumerate}[label=\roman*.]
+            \item ¿Cómo verificas que $P$ visita cada vértice de $G$ exactamente una vez?
+            \item ¿Cómo verificas que cada arista de $P$ existe en $G$?
+            \item ¿Cómo calculas $cost(P)$ y verificas $cost(P)\leq B$?
+            \item Concluye que el procedimiento anterior tiene complejidad polinomial.
         \end{enumerate}
-        \item Muestra que para cada función construible $T:\mathbb{N}\longrightarrow \mathbb{N}$, si $L\in \mathbf{DTIME}(T(n))$, entonces existe una máquina de Turing olvidadiza que decide $L$ en tiempo $O(T(n)\log T(n))$.
+    \end{enumerate}
+
+    \item (\textit{2 puntos}) Dados $G=(V,E)$ y $S\subseteq V$, decimos que $S$ es una \textit{cubierta de vértices} de $G$ si:
+    $$cover(G,S)\;\iff\;\forall uv\in E\,[u\in S\vee v\in S]$$
+    Muestra que el siguiente lenguaje está en $\mathbf{NP}$:
+    $$\texttt{VERTEXCOVER}=\Big\{(G,k):\exists S\subseteq V\,\big[|S|\leq k\wedge cover(G,S)\big]\Big\}$$
+    \begin{enumerate}
+        \item Propón un testigo para una instancia positiva $(G,k)\in\texttt{VERTEXCOVER}$.
+        \item Muestra que el testigo tiene tamaño polinomial en $|(G,k)|$.
+        \item Describe el verificador $V(G,k,S)$ y analiza su complejidad temporal.
+        \item Concluye que $\texttt{VERTEXCOVER}\in\mathbf{NP}$.
+    \end{enumerate}
+
+    \item (\textit{2 puntos}) Dada una gráfica no dirigida $G=(V,E)$ y un entero $k$, define:
+    $$\texttt{MAXCUT}=\Big\{(G,k):\exists S\subseteq V\,\Big[\,\big|\{uv\in E: |\{u,v\}\cap S|=1\}\big|\geq k\,\Big]\Big\}$$
+    Muestra que $\texttt{MAXCUT}\in\mathbf{NP}$ siguiendo los pasos:
+    \begin{enumerate}
+        \item Propón un testigo para comprobar que $(G,k)\in\texttt{MAXCUT}$.
+        \item Muestra que el testigo tiene tamaño polinomial en $|Bin(G,k)|$.
+        \item Describe el testigo $u(G,k,S)$ y analiza la complejidad temporal de la verificación.
+        \item Concluye que $\texttt{MAXCUT}\in\mathbf{NP}$.
+    \end{enumerate}
+
+    \item (\textit{1 punto}) Muestra que $\mathbf{P}\subseteq\mathbf{NP}\cap\mathbf{coNP}$.
+    \begin{enumerate}
+        \item Sea $L\in\mathbf{P}$. Construye un verificador polinomial para $L$ y concluye que $L\in\mathbf{NP}$.
+        \item Muestra que $\overline{L}\in\mathbf{P}$ y usa el inciso anterior para concluir que $L\in\mathbf{coNP}$.
+        \item Concluye que $\mathbf{P}\subseteq\mathbf{NP}\cap\mathbf{coNP}$.
+    \end{enumerate}
+
+    \item (\textit{1.5 puntos}) Muestra que si $\mathbf{P}=\mathbf{NP}$, entonces $\mathbf{NP}=\mathbf{coNP}$.
+    \begin{enumerate}
+        \item Asumiendo $\mathbf{P}=\mathbf{NP}$, sea $L\in\mathbf{NP}$. Muestra que $L\in\mathbf{coNP}$, y concluye $\mathbf{NP}\subseteq\mathbf{coNP}$.
+        \item Bajo la misma hipótesis, sea $L\in\mathbf{coNP}$. Muestra que $L\in\mathbf{NP}$, y concluye $\mathbf{coNP}\subseteq\mathbf{NP}$.
+        \item Concluye que $\mathbf{NP}=\mathbf{coNP}$.
+    \end{enumerate}
+
 \end{enumerate}
 \end{document}
