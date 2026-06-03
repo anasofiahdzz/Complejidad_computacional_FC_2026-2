@@ -1,141 +1,337 @@
-\documentclass[a4paper,12pt]{article}
-\usepackage{amsmath, amsthm, amssymb,  wasysym, verbatim, bbm, color, graphics, geometry, dirtytalk, 
-multicol,
-algorithm,
-%algorithm2e,
-%algorithmic,
-}
-%\usepackage{calrsfs}
-\usepackage{algorithm}
-\usepackage[noend]{algpseudocode} % suppresses "end while", etc.
-\usepackage{algorithmicx}
-\algrenewcommand\algorithmicindent{2.0em} %
-\usepackage[spanish]{babel}
-\usepackage{marginnote}
-\geometry{tmargin=.25in, bmargin=.65in, lmargin=.75in, rmargin = .75in}  
-%Configurar manualmente la primera sección
- \setcounter{section}{0}
-\usepackage{dirtytalk}
-\usepackage{tikz}
-\usepackage{array}
+% ============================================================
+%  Tarea-Examen 3. Complejidad Computacional.
+%  Tema: SAT y 3SAT son NP-completos (Teorema de Cook-Levin)
+% ============================================================
+\documentclass[12pt, letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish, mexico]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
 \usepackage{enumitem}
-\usepackage{nicematrix}
-\usetikzlibrary{chains,fit,shapes}
-\renewcommand\thempfootnote{\arabic{mpfootnote}} 
-\renewcommand{\contentsname}{Contenido}
-\newcommand{\A}{\mathcal{A}}
-\newcommand{\B}{\mathcal{B}} 
-\newcommand{\C}{\mathcal{C}} 
-\newcommand{\D}{\mathcal{D}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\N}{\mathbb{N}}
-\renewcommand{\P}{\mathcal{P}}
-\newcommand{\dde}{\Delta}
-\newcommand{\ala}{^}
-\renewcommand{\t}{\text}
-\renewcommand{\r}{\rightarrow}
-% \newcommand{\s}{\subseteq}
-\renewcommand{\u}{\unlhd}
-\newcommand{\tr}{\vartriangleleft}
-\newcommand{\re}{\restriction}
-\newcommand{\pr}{\preccurlyeq}
-\newcommand{\prefacename}{Prefacio}
-\newtheorem{lemma}{Lema}[section]
-\newtheorem{proposition}{Proposici\'on}[section]
-\newtheorem{theorem}{Teorema}[section]
-\newtheorem*{theorem*}{Teorema}
-\newtheorem{corollary}{Corolario}[section]
-\newtheorem{fact}{Hecho}[section]
-\newtheorem{claim}{Afirmaci\'on}[section]
+\usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage{mdframed}
 
-\theoremstyle{definition}
-\newtheorem*{definition*}{Definición}
-\newtheorem{example}{Ejemplo}[section]
-\newtheorem{example*}{Ejemplo}
-\newtheorem{definition}{Definici\'on}[section]
-\newtheorem{remark}{Nota}[section]
-\newtheorem*{remark*}{Nota}
-\newtheorem{eje}{Ejercicio}[section]
-\newtheorem{question}{Pregunta}[section]
-\newtheorem{notation}{Notaci\'on}[section]
-\newtheorem*{notation*}{Notaci\'on}
+\geometry{margin=2.5cm}
 
-\newtheorem{thm}{Theorem}
-\newtheorem{defn}{Definition}
-\newtheorem{conv}{Convention}
-\newtheorem{rem}{Remark}
-\newtheorem{lem}{Lemma}
-\newtheorem{cor}{Corollary}
+% ── Macros ───────────────────────────────────────────────────────────────────
+\newcommand{\SAT}{\textsc{Sat}}
+\newcommand{\tSAT}{\textsc{3Sat}}
+\newcommand{\NP}{\mathbf{NP}}
+\newcommand{\PP}{\mathbf{P}}
+\newcommand{\coNP}{\mathbf{coNP}}
+\newcommand{\ntime}{\textsc{NTime}}
+\newcommand{\leqp}{\leq_p}
+\newcommand{\abs}[1]{\left|#1\right|}
 
-\title{Tarea-examen 2. Complejidad Computacional.}
-\author{}
-\date{}
+% Encabezado de problema con puntaje
+\newcommand{\problema}[2]{%
+  \bigskip
+  \noindent\textbf{Problema #1} \textnormal{(#2 puntos)}\par\smallskip
+}
 
+% ── Documento ────────────────────────────────────────────────────────────────
 \begin{document}
 
-\maketitle
-\begin{enumerate}
+\begin{center}
+  {\large \textbf{Tarea-examen 3. Complejidad Computacional.}}\\[4pt]
+  \textit{El Teorema de Cook-Levin: \SAT{} y \tSAT{} son NP-completos}
+\end{center}
 
-    \item (\textit{2 puntos}) Sea $G=(V,E)$ una gráfica. Una $k$-\textit{coloración} de $G$ es una función $c:V\longrightarrow\{1,\ldots,k\}$ tal que:
-    $$\forall u,v\in V\,\big[uv\in E\to c(u)\neq c(v)\big]$$
-    Considera el lenguaje $\texttt{3COL}=\{Bin(G): G \text{ tiene una 3-coloración}\}$.
-    \begin{enumerate}
-        \item Dado que $G\in\texttt{3COL}$, ¿qué estructura propones como \textit{testigo} de este hecho?
-        \item Muestra que el tamaño del testigo es polinomial en función de $|Bin(G)|$.
-        \item Describe un algoritmo verificador $V$ que, dados $Bin(G)$ y el testigo, decida en tiempo polinomial si el testigo es válido.
-        \item Concluye formalmente que $\texttt{3COL}\in\mathbf{NP}$.
-        \item ¿Es posible que $\texttt{3COL}\in\mathbf{P}$? ¿Qué consecuencia tendría eso para las clases de complejidad?
-    \end{enumerate}
+\smallskip
+\begin{mdframed}
+\textbf{Indicaciones.} Justifica todas las respuestas. Cuando demuestres una
+implicación, indica explícitamente la dirección que estás demostrando.
 
-    \item (\textit{1.5 puntos}) Sea $G$ una gráfica dirigida y ponderada, y $cost(P)$ la suma de los costos de las aristas de un circuito $P$. Considera:
-    $$\texttt{TSP}=\{(G,B): \text{existe un circuito Hamiltoniano en $G$ con $cost(P)\leq B$}\}$$
-    \begin{enumerate}
-        \item ¿$\texttt{TSP}\in\mathbf{P}$? Justifica brevemente.
-        \item Considera la familia:
-        $$\texttt{TSP}^*=\{(G,P,B): \text{$P$ es un circuito Hamiltoniano en $G$ y $cost(P)\leq B$}\}$$
-        Muestra que $\texttt{TSP}^*\in\mathbf{P}$ siguiendo los pasos:
-        \begin{enumerate}[label=\roman*.]
-            \item ¿Cómo verificas que $P$ visita cada vértice de $G$ exactamente una vez?
-            \item ¿Cómo verificas que cada arista de $P$ existe en $G$?
-            \item ¿Cómo calculas $cost(P)$ y verificas $cost(P)\leq B$?
-            \item Concluye que el procedimiento anterior tiene complejidad polinomial.
-        \end{enumerate}
-    \end{enumerate}
+\textbf{Los Problemas 3, 4 y 5 suman 10 puntos y son suficientes para obtener
+10.}  Los Problemas 1, 2 y 6 son opcionales y sirven como puntos de
+recuperación: si alguno de los problemas principales no te sale completo,
+puedes compensar resolviendo alguno de estos.  El total disponible es de
+\textbf{17 puntos}.
 
-    \item (\textit{2 puntos}) Dados $G=(V,E)$ y $S\subseteq V$, decimos que $S$ es una \textit{cubierta de vértices} de $G$ si:
-    $$cover(G,S)\;\iff\;\forall uv\in E\,[u\in S\vee v\in S]$$
-    Muestra que el siguiente lenguaje está en $\mathbf{NP}$:
-    $$\texttt{VERTEXCOVER}=\Big\{(G,k):\exists S\subseteq V\,\big[|S|\leq k\wedge cover(G,S)\big]\Big\}$$
-    \begin{enumerate}
-        \item Propón un testigo para una instancia positiva $(G,k)\in\texttt{VERTEXCOVER}$.
-        \item Muestra que el testigo tiene tamaño polinomial en $|(G,k)|$.
-        \item Describe el verificador $V(G,k,S)$ y analiza su complejidad temporal.
-        \item Concluye que $\texttt{VERTEXCOVER}\in\mathbf{NP}$.
-    \end{enumerate}
+\medskip
+\textbf{Entrega.}  El documento se entrega de forma \textbf{digital} a más
+tardar el \textbf{jueves 11 de junio}.  Puedes escribir tus respuestas
+\textbf{a mano} (foto o escaneo legible) \textbf{o en \LaTeX{}}.  En cualquier
+caso, sube tu archivo a \textbf{Google Drive} o \textbf{GitHub} y comparte el
+enlace (con permisos de lectura) en la asignación de Classroom.
+\end{mdframed}
 
-    \item (\textit{2 puntos}) Dada una gráfica no dirigida $G=(V,E)$ y un entero $k$, define:
-    $$\texttt{MAXCUT}=\Big\{(G,k):\exists S\subseteq V\,\Big[\,\big|\{uv\in E: |\{u,v\}\cap S|=1\}\big|\geq k\,\Big]\Big\}$$
-    Muestra que $\texttt{MAXCUT}\in\mathbf{NP}$ siguiendo los pasos:
-    \begin{enumerate}
-        \item Propón un testigo para comprobar que $(G,k)\in\texttt{MAXCUT}$.
-        \item Muestra que el testigo tiene tamaño polinomial en $|Bin(G,k)|$.
-        \item Describe el testigo $u(G,k,S)$ y analiza la complejidad temporal de la verificación.
-        \item Concluye que $\texttt{MAXCUT}\in\mathbf{NP}$.
-    \end{enumerate}
+% ====================================================================
+\problema{1}{2} \textbf{Consecuencia directa: $\PP = \NP$ si y solo si
+$\SAT \in \PP$.}
 
-    \item (\textit{1 punto}) Muestra que $\mathbf{P}\subseteq\mathbf{NP}\cap\mathbf{coNP}$.
-    \begin{enumerate}
-        \item Sea $L\in\mathbf{P}$. Construye un verificador polinomial para $L$ y concluye que $L\in\mathbf{NP}$.
-        \item Muestra que $\overline{L}\in\mathbf{P}$ y usa el inciso anterior para concluir que $L\in\mathbf{coNP}$.
-        \item Concluye que $\mathbf{P}\subseteq\mathbf{NP}\cap\mathbf{coNP}$.
-    \end{enumerate}
+En este problema formalizamos la razón por la que $\SAT$ es el problema
+``más difícil'' de $\NP$.
 
-    \item (\textit{1.5 puntos}) Muestra que si $\mathbf{P}=\mathbf{NP}$, entonces $\mathbf{NP}=\mathbf{coNP}$.
-    \begin{enumerate}
-        \item Asumiendo $\mathbf{P}=\mathbf{NP}$, sea $L\in\mathbf{NP}$. Muestra que $L\in\mathbf{coNP}$, y concluye $\mathbf{NP}\subseteq\mathbf{coNP}$.
-        \item Bajo la misma hipótesis, sea $L\in\mathbf{coNP}$. Muestra que $L\in\mathbf{NP}$, y concluye $\mathbf{coNP}\subseteq\mathbf{NP}$.
-        \item Concluye que $\mathbf{NP}=\mathbf{coNP}$.
-    \end{enumerate}
+\begin{enumerate}[label=\alph*)]
+
+\item (0.5 pts) ($\Rightarrow$) Supón que $\PP = \NP$.  Concluye que
+  $\SAT \in \PP$ y justifica brevemente por qué.
+
+\item (1 pt) ($\Leftarrow$) Supón ahora que $\SAT \in \PP$.  Sea
+  $L \in \NP$ un lenguaje arbitrario.
+  \begin{enumerate}[label=\roman*.]
+    \item Explica por qué existe una reducción de Karp en tiempo polinomial
+      $f$ tal que $x \in L \iff f(x) \in \SAT$.  \textit{(Basta citar el
+      resultado correspondiente visto en clase.)}
+    \item Dado un algoritmo polinomial $D$ para $\SAT$, describe un
+      algoritmo polinomial para $L$ usando $f$ y $D$.
+    \item Concluye que $L \in \PP$.
+  \end{enumerate}
+
+\item (0.5 pts) Combina los incisos anteriores para enunciar la equivalencia
+  $\PP = \NP \iff \SAT \in \PP$.  ¿Por qué este resultado convierte a $\SAT$
+  en un problema ``representante'' de toda la clase $\NP$?
 
 \end{enumerate}
+
+% ====================================================================
+\problema{2}{2} \textbf{Expresividad de fórmulas CNF.}
+
+Recordamos las siguientes definiciones.  Un \emph{literal} es una variable
+booleana $x_i$ o su negación $\bar{x}_i$.  Una \emph{cláusula} es una
+disyunción de literales, es decir, una expresión de la forma
+$(\ell_1 \vee \ell_2 \vee \cdots \vee \ell_k)$ donde cada $\ell_j$ es un
+literal.  Una fórmula en \emph{Forma Normal Conjuntiva} (CNF) es una
+conjunción de cláusulas:
+\[
+  \varphi = \bigwedge_{i=1}^{m} \left(\bigvee_{j} \ell_{ij}\right).
+\]
+Antes de probar que $\SAT$ es NP-completo necesitamos saber ``hablar en CNF''.
+
+\begin{enumerate}[label=\alph*)]
+
+\item (0.5 pts) La fórmula $(x_1 \vee \bar{y}_1) \wedge (\bar{x}_1 \vee y_1)$
+  está en forma CNF.
+  \begin{enumerate}[label=\roman*.]
+    \item Muestra que es satisfecha \emph{si y solo si} $x_1 = y_1$.
+    \item Usando este hecho, escribe una fórmula CNF $\varphi_{=}$ sobre las
+      variables $x_1,\ldots,x_n,y_1,\ldots,y_n$ que es satisfecha si y solo
+      si $x_i = y_i$ para todo $i \in \{1,\ldots,n\}$.  ¿Cuántas cláusulas
+      tiene $\varphi_{=}$?
+  \end{enumerate}
+
+\item (1 pt) \textbf{Universalidad de AND/OR/NOT.}
+  Sea $f : \{0,1\}^\ell \to \{0,1\}$ una función booleana cualquiera, con
+  $\ell \in \mathbb{N}$ fijo.
+  \begin{enumerate}[label=\roman*.]
+    \item Para cada $v \in \{0,1\}^\ell$ tal que $f(v) = 0$, construye una
+      cláusula $C_v$ en las $\ell$ variables tal que $C_v(v) = 0$ y
+      $C_v(u) = 1$ para todo $u \neq v$.
+
+      \textit{Sugerencia:} Si $v = (v_1, \ldots, v_\ell)$, considera el
+      literal $z_j = x_j$ si $v_j = 0$ y $z_j = \bar{x}_j$ si $v_j = 1$.
+
+    \item Define $\varphi_f = \bigwedge_{v:\, f(v)=0} C_v$.  Demuestra que
+      $\varphi_f(u) = f(u)$ para todo $u \in \{0,1\}^\ell$, y acota el
+      tamaño de $\varphi_f$.
+  \end{enumerate}
+
+\item (0.5 pts) Sea $F : \{0,1\}^k \to \{0,1\}^c$ una función con $k$ y $c$
+  constantes (que dependen de la máquina, pero no del tamaño de la entrada).
+  \begin{enumerate}[label=\roman*.]
+    \item Explica por qué cada bit de salida de $F$ puede expresarse como una
+      fórmula CNF de tamaño \emph{constante} (usando el inciso b).
+    \item ¿Por qué este hecho es crucial en la prueba del Teorema de
+      Cook-Levin?
+  \end{enumerate}
+
+\end{enumerate}
+
+% ====================================================================
+\problema{3}{5} \textbf{$\SAT \leq_p \tSAT$: la reducción cláusula por
+cláusula.}
+
+Recordamos que $k$-\SAT{} es el lenguaje de las fórmulas CNF satisfacibles en
+las que cada cláusula tiene \emph{a lo más} $k$ literales.  El objetivo de este
+problema es mostrar que toda fórmula CNF puede convertirse en una fórmula 3CNF
+equivalente (en cuanto a satisfacibilidad) en tiempo polinomial.
+
+\begin{enumerate}[label=\alph*)]
+
+\item (1 pt) \textbf{Cláusulas cortas.}
+  \begin{enumerate}[label=\roman*.]
+    \item Sea $C = (\ell_1)$ una cláusula de un solo literal.  Introduce dos
+      variables auxiliares $z_1, z_2$ y reemplaza $C$ por una conjunción de
+      cláusulas de exactamente 3 literales, preservando la satisfacibilidad.
+    \item Sea $C = (\ell_1 \vee \ell_2)$ una cláusula de dos literales.
+      Introduce una variable auxiliar $z$ y reemplaza $C$ por una cláusula de
+      exactamente 3 literales, preservando la satisfacibilidad.
+  \end{enumerate}
+
+\item (1 pt) \textbf{Cláusula de 4 literales.}
+  Sea $C = (\ell_1 \vee \ell_2 \vee \ell_3 \vee \ell_4)$.  Introduce una
+  variable auxiliar $z$ y propón dos cláusulas $C_1$ y $C_2$ de exactamente 3
+  literales que reemplacen a $C$.
+
+\item (1.5 pts) \textbf{Correctud del reemplazo.}
+  Demuestra que $C_1 \wedge C_2$ (del inciso b) es satisfacible si y solo si
+  $C$ lo es.
+  \begin{enumerate}[label=\roman*.]
+    \item ($\Rightarrow$) Si existe una asignación que satisface $C$, muestra
+      que existe un valor para $z$ que satisface $C_1 \wedge C_2$.
+    \item ($\Leftarrow$) Si $C_1 \wedge C_2$ es satisfacible, muestra que
+      la misma asignación (ignorando $z$) satisface $C$.
+  \end{enumerate}
+
+\item (1 pt) \textbf{Generalización: cláusula de tamaño $k > 3$.}
+  Sea $C = (\ell_1 \vee \ell_2 \vee \cdots \vee \ell_k)$ con $k > 3$.
+  \begin{enumerate}[label=\roman*.]
+    \item Describe una construcción recursiva que reemplaza $C$ por una
+      conjunción de cláusulas de tamaño $\leq 3$, usando variables auxiliares
+      $z_1, \ldots, z_{k-3}$.
+
+      \textit{Sugerencia:} En el paso base, aplica el inciso (b) con
+      $\ell_1, \ell_2$ y $z_1$ para obtener una cláusula $(\ell_1 \vee \ell_2
+      \vee z_1)$ y luego recurre sobre $(\bar{z}_1 \vee \ell_3 \vee \cdots
+      \vee \ell_k)$.
+
+    \item ¿Cuántas variables auxiliares se introducen?
+    \item ¿Cuántas cláusulas de tamaño 3 produce la construcción?
+    \item Argumenta (por inducción o por el mismo razonamiento del inciso c)
+      que la conjunción resultante es satisfacible si y solo si $C$ lo es.
+  \end{enumerate}
+
+\item (0.5 pts) \textbf{La reducción $f$.}
+  Sea $\varphi$ una fórmula CNF con $m$ cláusulas y longitud total
+  $s = |\varphi|$ (número de símbolos).  Aplica la construcción anterior
+  cláusula por cláusula para obtener una fórmula 3CNF $\psi = f(\varphi)$.
+  \begin{enumerate}[label=\roman*.]
+    \item Acota el tamaño de $\psi$ en función de $s$.
+    \item Muestra que $f$ es computable en tiempo polinomial.
+    \item Concluye que $\SAT \leq_p \tSAT$.
+  \end{enumerate}
+
+\end{enumerate}
+
+% ====================================================================
+\problema{4}{2} \textbf{3SAT es NP-completo.}
+
+Usa los resultados de los problemas anteriores para concluir el Teorema de
+Cook-Levin.
+
+\begin{enumerate}[label=\alph*)]
+
+\item (0.5 pts) Muestra que $\tSAT \in \NP$ describiendo un testigo y un
+  verificador polinomial.
+
+\item (1 pt) Usa que $\SAT$ es NP-duro (visto en clase) y la reducción
+  $\SAT \leq_p \tSAT$ (Problema 3e) para mostrar que $\tSAT$ es NP-duro.
+  \textit{Sugerencia:} usa la transitividad de las reducciones en tiempo
+  polinomial.
+
+\item (0.5 pts) Concluye que $\tSAT$ es NP-completo.
+
+\end{enumerate}
+
+% ====================================================================
+\problema{5}{3} \textbf{Autoreducibilidad de \SAT: decidir implica
+encontrar.}
+
+En este problema mostramos que si $\PP = \NP$ (y por lo tanto $\SAT \in \PP$),
+entonces no solo podemos \emph{decidir} si una fórmula es satisfacible, sino
+también \emph{encontrar} una asignación satisfactoria en tiempo polinomial.
+
+Sea $D$ un algoritmo en tiempo polinomial para $\SAT$ y sea $\varphi$ una
+fórmula CNF satisfacible sobre las variables $x_1, \ldots, x_n$.  Para
+$b \in \{0,1\}$, denotamos por $\varphi[x_i \leftarrow b]$ la fórmula
+obtenida al sustituir $x_i$ por $b$ y simplificar.
+
+\begin{enumerate}[label=\alph*)]
+
+\item (0.5 pts) Muestra que si $\varphi \in \SAT$, entonces
+  $\varphi[x_1 \leftarrow 0] \in \SAT$ o
+  $\varphi[x_1 \leftarrow 1] \in \SAT$ (o ambas).
+
+\item (1 pt) Describe el siguiente algoritmo en pseudocódigo y argumenta
+  que es correcto:
+  \begin{enumerate}[label=\roman*.]
+    \item Para $i = 1, \ldots, n$: si $D(\varphi[x_i \leftarrow 0]) = 1$,
+      fija $x_i = 0$; de lo contrario, fija $x_i = 1$.  Actualiza $\varphi$
+      sustituyendo el valor asignado a $x_i$.
+    \item Al terminar el ciclo, devuelve la asignación $(x_1, \ldots, x_n)$.
+  \end{enumerate}
+  Muestra que, si $\varphi \in \SAT$, el algoritmo devuelve una asignación
+  que satisface $\varphi$.
+
+\item (0.5 pts) ¿Cuántas llamadas a $D$ realiza el algoritmo?
+  Concluye que el algoritmo corre en tiempo polinomial (suponiendo que $D$
+  es polinomial).
+
+\item (1 pt) \textbf{Extensión a cualquier $L \in \NP$.}
+  Sea $L \in \NP$ con reducción de Cook-Levin $x \mapsto \varphi_x$
+  (vista en clase), donde la asignación satisfactoria de $\varphi_x$ incluye,
+  entre sus variables, al testigo $u$ de $x \in L$.
+  Suponiendo $\PP = \NP$, describe cómo encontrar un testigo para $x \in L$
+  en tiempo polinomial.
+
+\end{enumerate}
+
+% ====================================================================
+\problema{6}{3} \textbf{$\tSAT \leq_p \textsc{IndSet}$: las reducciones
+se propagan.}
+
+Definimos
+$\textsc{IndSet} = \{\langle G, k\rangle :\text{$G$ tiene un conjunto
+independiente de tamaño $k$}\}$.
+En este problema usamos que $\tSAT$ es NP-completo (Problema 4) para mostrar
+que $\textsc{IndSet}$ también lo es.
+
+Sea $\varphi = C_1 \wedge \cdots \wedge C_m$ una fórmula 3CNF con $m$
+cláusulas.  Para cada cláusula $C_i = (\ell_{i,1} \vee \ell_{i,2} \vee
+\ell_{i,3})$ asociamos un \emph{grupo} de tres vértices
+$\{v_{i,1}, v_{i,2}, v_{i,3}\}$ en una gráfica $G(\varphi)$.  Las aristas
+de $G(\varphi)$ se agregan según las siguientes dos reglas:
+\begin{enumerate}[label=(R\arabic*)]
+  \item \textbf{Aristas internas.}  Para cada grupo $i$ y para todo par
+    $j \neq j'$, agrega la arista $\{v_{i,j}, v_{i,j'}\}$.
+  \item \textbf{Aristas de conflicto.}  Para grupos distintos $i \neq i'$
+    y cualesquiera $j, j'$, agrega la arista $\{v_{i,j}, v_{i',j'}\}$ si
+    $\ell_{i,j}$ y $\ell_{i',j'}$ son literales contradictorios (i.e.
+    $\ell_{i,j} = x_k$ y $\ell_{i',j'} = \bar{x}_k$ para alguna variable
+    $x_k$, o viceversa).
+\end{enumerate}
+
+\begin{enumerate}[label=\alph*)]
+
+\item (0.5 pts) Da un ejemplo pequeño: toma $\varphi = (x_1 \vee x_2 \vee
+  \bar{x}_3) \wedge (\bar{x}_1 \vee x_2 \vee x_3)$, dibuja $G(\varphi)$
+  indicando vértices, aristas internas y aristas de conflicto, y señala un
+  conjunto independiente de tamaño $m = 2$.
+
+\item (1 pt) ($\varphi$ satisfacible $\Rightarrow$ $G(\varphi)$ tiene
+  un conjunto independiente de tamaño $m$.)  Sea $\sigma$ una asignación
+  que satisface $\varphi$.
+  \begin{enumerate}[label=\roman*.]
+    \item Para cada cláusula $C_i$, elige un literal $\ell_{i,j_i}$ que
+      sea verdadero bajo $\sigma$ y sea el vértice representante de $C_i$.
+      Define $S = \{v_{i,j_i} : 1 \leq i \leq m\}$.
+    \item Muestra que $|S| = m$.
+    \item Muestra que $S$ es un conjunto independiente (usa las reglas R1
+      y R2 para descartar que haya aristas dentro de $S$).
+  \end{enumerate}
+
+\item (1 pt) ($G(\varphi)$ tiene un conjunto independiente de tamaño $m$
+  $\Rightarrow$ $\varphi$ es satisfacible.)  Sea $S$ un conjunto independiente
+  de tamaño $m$ en $G(\varphi)$.
+  \begin{enumerate}[label=\roman*.]
+    \item Usa la regla R1 para mostrar que $S$ contiene exactamente un
+      vértice de cada grupo.
+    \item Usa la regla R2 para mostrar que los literales correspondientes
+      a los vértices de $S$ son pairwise consistentes (nunca aparecen $x_k$
+      y $\bar{x}_k$ simultáneamente).
+    \item Construye una asignación $\sigma$ que satisfaga $\varphi$.
+  \end{enumerate}
+
+\item (0.5 pts) Muestra que la construcción $\varphi \mapsto
+  \langle G(\varphi), m \rangle$ es computable en tiempo polinomial en
+  $|\varphi|$.  Concluye que $\tSAT \leq_p \textsc{IndSet}$ y, usando que
+  $\tSAT$ es NP-duro y que $\textsc{IndSet} \in \NP$, que
+  $\textsc{IndSet}$ es NP-completo.
+
+\end{enumerate}
+
 \end{document}
